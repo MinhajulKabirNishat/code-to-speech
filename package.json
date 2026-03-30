@@ -12,10 +12,14 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
+ "commands": [
       {
         "command": "code-to-speech.readCode",
         "title": "Code-to-Speech: Read My Code"
+      },
+      {
+        "command": "code-to-speech.stopReading",
+        "title": "Code-to-Speech: Stop Reading"
       }
     ]
   },

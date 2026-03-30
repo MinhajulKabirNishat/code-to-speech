@@ -22,6 +22,13 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
+ let stopDisposable = vscode.commands.registerCommand('code-to-speech.stopReading', () => {
+        say.stop();
+        vscode.window.showInformationMessage('Speech stopped.');
+    });
+
+    context.subscriptions.push(disposable);
+    context.subscriptions.push(stopDisposable); 
     context.subscriptions.push(disposable);
 }
 
