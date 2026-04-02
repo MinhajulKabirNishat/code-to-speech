@@ -43,5 +43,9 @@
   },
   "dependencies": {
     "say": "^0.16.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MinhajulKabirNishat/code-to-speech.git"
   }
 }

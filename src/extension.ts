@@ -8,10 +8,21 @@ const highlightDecorationType = vscode.window.createTextEditorDecorationType({
 });
 
 let isSpeaking = false;
-let currentTimer: NodeJS.Timeout | undefined; 
+let currentTimer: NodeJS.Timeout | undefined;
+
+let myStatusBarItem: vscode.StatusBarItem; 
 
 export function activate(context: vscode.ExtensionContext) {
     
+    
+    myStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+    myStatusBarItem.command = 'code-to-speech.readCode';
+    myStatusBarItem.text = `$(play) Read Code`;
+    myStatusBarItem.tooltip = 'Click to hear your code out loud';
+    myStatusBarItem.show(); 
+    context.subscriptions.push(myStatusBarItem);
+
+   
     let readDisposable = vscode.commands.registerCommand('code-to-speech.readCode', async () => {
         if (isSpeaking) {
             vscode.window.showWarningMessage('Already reading! Stop first to restart.');
@@ -19,14 +30,22 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         const editor = vscode.window.activeTextEditor;
-        if (!editor) return;
+        if (!editor) {
+            vscode.window.showErrorMessage('Open a file first!');
+            return;
+        }
 
         isSpeaking = true;
-        const document = editor.document;
-
-        for (let i = 0; i < document.lineCount; i++) {
         
-            if (!isSpeaking) break;
+    
+        myStatusBarItem.text = `$(primitive-square) Stop Reading`;
+        myStatusBarItem.command = 'code-to-speech.stopReading';
+
+        const document = editor.document;
+        for (let i = 0; i < document.lineCount; i++) {
+            if (!isSpeaking) {
+                break;
+                }
 
             const line = document.lineAt(i);
             const text = line.text.trim();
@@ -36,39 +55,39 @@ export function activate(context: vscode.ExtensionContext) {
                 editor.setDecorations(highlightDecorationType, [range]);
                 editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
 
-                say.speak(text);
-
+                say.speak(text, undefined, 1.0);
                 const estimatedMs = Math.max(1500, text.length * 80);
                 
-               
                 await new Promise((resolve) => {
                     currentTimer = setTimeout(resolve, estimatedMs);
                 });
             }
         }
 
-       
+        
         isSpeaking = false;
+        myStatusBarItem.text = `$(play) Read Code`;
+        myStatusBarItem.command = 'code-to-speech.readCode';
         editor.setDecorations(highlightDecorationType, []);
     });
 
     let stopDisposable = vscode.commands.registerCommand('code-to-speech.stopReading', () => {
         isSpeaking = false;
-        
-   
         say.stop(); 
-        
         
         if (currentTimer) {
             clearTimeout(currentTimer);
             currentTimer = undefined;
         }
+
+       
+        myStatusBarItem.text = `$(play) Read Code`;
+        myStatusBarItem.command = 'code-to-speech.readCode';
         
         const editor = vscode.window.activeTextEditor;
         if (editor) {
             editor.setDecorations(highlightDecorationType, []);
         }
-        
         vscode.window.showInformationMessage('Speech stopped.');
     });
 
