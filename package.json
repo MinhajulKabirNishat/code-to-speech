@@ -12,7 +12,22 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
- "commands": [
+    "configuration": {
+      "title": "Code-to-Speech Settings",
+      "properties": {
+        "codeToSpeech.speed": {
+          "type": "number",
+          "default": 1,
+          "description": "Voice speed (1.0 is normal, 0.5 is slow, 2.0 is fast)."
+        },
+        "codeToSpeech.voice": {
+          "type": "string",
+          "default": "Alex",
+          "description": "The name of the voice (e.g., Alex, Samantha, Microsoft David)."
+        }
+      }
+    },
+    "commands": [
       {
         "command": "code-to-speech.readCode",
         "title": "Code-to-Speech: Read My Code"
@@ -20,6 +35,10 @@
       {
         "command": "code-to-speech.stopReading",
         "title": "Code-to-Speech: Stop Reading"
+      },
+      {
+        "command": "code-to-speech.toggleMute",
+        "title": "Code-to-Speech: Toggle Mute"
       }
     ]
   },
@@ -33,7 +52,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
+    "@types/node": "^22.19.17",
     "@types/vscode": "^1.110.0",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
